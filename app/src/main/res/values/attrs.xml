@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RefreshLayout">
+        <attr name="pullViewPosition">
+            <enum name="first" value="1" />
+            <enum name="second" value="2" />
+        </attr>
+    </declare-styleable>
+
+</resources>
