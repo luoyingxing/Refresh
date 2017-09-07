@@ -1,10 +1,10 @@
 package com.lyx.refresh;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.lyx.refresh.adapter.CommonAdapter;
 import com.lyx.refresh.adapter.ViewHolder;
 import com.lyx.refresh.entity.Info;
+import com.lyx.refresh.sample.PersonalActivity;
 import com.lyx.refresh.view.RefreshLayout;
 
 import java.util.ArrayList;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView refreshTV;
     private TextView loadTV;
     private CommonAdapter<Info> adapter;
+    private ImageView avatarIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        avatarIV = (ImageView) headerLayout.findViewById(R.id.iv_avatar);
+        avatarIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, PersonalActivity.class));
+            }
+        });
     }
 
     @Override
