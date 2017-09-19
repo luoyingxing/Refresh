@@ -29,12 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private RefreshLayout layout;
-    private ListView listView;
-    private TextView refreshTV;
-    private TextView loadTV;
-    private CommonAdapter<Info> adapter;
-    private ImageView avatarIV;
+    private RefreshLayout mRefreshLayout;
+    private ListView mListView;
+    private TextView mRefreshTV;
+    private TextView mLoadTV;
+    private CommonAdapter<Info> mAdapter;
+    private ImageView mAvatarIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        avatarIV = (ImageView) headerLayout.findViewById(R.id.iv_avatar);
-        avatarIV.setOnClickListener(new View.OnClickListener() {
+        mAvatarIV = (ImageView) headerLayout.findViewById(R.id.iv_avatar);
+        mAvatarIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, PersonalActivity.class));
@@ -65,69 +65,68 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        layout = (RefreshLayout) findViewById(R.id.refresh_layout);
-        listView = (ListView) findViewById(R.id.list_view);
-        refreshTV = (TextView) findViewById(R.id.tv_refresh);
-        loadTV = (TextView) findViewById(R.id.tv_load);
+        mRefreshLayout = (RefreshLayout) findViewById(R.id.refresh_layout);
+        mListView = (ListView) findViewById(R.id.list_view);
+        mRefreshTV = (TextView) findViewById(R.id.tv_refresh);
+        mLoadTV = (TextView) findViewById(R.id.tv_load);
 
-        layout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
+        mRefreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
 
             @Override
             public void onRefresh() {
-                mHandler.sendMessageDelayed(mHandler.obtainMessage(), 2000);
-                adapter.clear();
+                mHandler.sendEmptyMessageDelayed(0x101, 2000);
             }
 
             @Override
             public void onLoadMore() {
-                mHandler.sendMessageDelayed(mHandler.obtainMessage(), 2000);
+                mHandler.sendEmptyMessageDelayed(0x102, 2000);
             }
         });
 
-        layout.setOnStatusListener(new RefreshLayout.OnStatusListener() {
+        mRefreshLayout.setOnStatusListener(new RefreshLayout.OnStatusListener() {
 
             @Override
             public void onRefreshInit() {
-                refreshTV.setText("下拉刷新");
+                mRefreshTV.setText("下拉刷新");
             }
 
             @Override
             public void onPrepareToRefresh() {
-                refreshTV.setText("松开刷新");
+                mRefreshTV.setText("松开刷新");
             }
 
             @Override
             public void onRefreshing() {
-                refreshTV.setText("正在刷新");
+                mRefreshTV.setText("正在刷新");
             }
 
             @Override
             public void onRefreshFinish() {
-                refreshTV.setText("下拉刷新");
+                mRefreshTV.setText("下拉刷新");
             }
 
             @Override
             public void onLoadInit() {
-                loadTV.setText("上拉加载更多");
+                mLoadTV.setText("上拉加载更多");
             }
 
             @Override
             public void onPrepareToLoadMore() {
-                loadTV.setText("松开加载更多");
+                mLoadTV.setText("松开加载更多");
             }
 
             @Override
             public void onLoading() {
-                loadTV.setText("正在加载");
+                mLoadTV.setText("正在加载");
             }
 
             @Override
             public void onLoadFinish() {
-                loadTV.setText("上拉加载更多");
+                mLoadTV.setText("上拉加载更多");
             }
         });
 
-        adapter = new CommonAdapter<Info>(this, new ArrayList<Info>(), R.layout.item_recycler_view) {
+        mAdapter = new CommonAdapter<Info>(this, new ArrayList<Info>(), R.layout.item_recycler_view) {
             @Override
             public void convert(ViewHolder helper, Info info) {
                 helper.setText(R.id.text, info.getInfoId() + ". " + info.getTitle());
@@ -135,9 +134,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 imageView.setImageURI(Uri.parse(info.getUrl()));
             }
         };
-        listView.setAdapter(adapter);
+        mListView.setAdapter(mAdapter);
 
-        adapter.addAll(getDataList());
+        mAdapter.addAll(getDataList());
     }
 
     private Handler mHandler = new Handler() {
@@ -145,26 +144,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            adapter.addAll(getDataList());
-            layout.onRefreshComplete();
-            layout.onLoadMoreComplete();
+            switch (msg.what) {
+                case 0x101:
+                    mAdapter.clear();
+                    mAdapter.addAll(getDataList());
+                    mRefreshLayout.onRefreshComplete();
+                    break;
+                case 0x102:
+                    mAdapter.addAll(getDataList());
+                    mRefreshLayout.onLoadMoreComplete();
+                    break;
+            }
         }
     };
 
     private List<Info> getDataList() {
         List<Info> list = new ArrayList<>();
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img3.imgtn.bdimg.com/it/u=4150026489,1943935114&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img4.imgtn.bdimg.com/it/u=2787880723,3061645111&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img3.imgtn.bdimg.com/it/u=165337335,1524178590&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img0.imgtn.bdimg.com/it/u=442340884,1909164320&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img3.imgtn.bdimg.com/it/u=3407380450,178139315&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img3.imgtn.bdimg.com/it/u=1576567003,3635369844&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img4.imgtn.bdimg.com/it/u=766879173,2974934941&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img5.imgtn.bdimg.com/it/u=2950298496,1136505419&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img2.imgtn.bdimg.com/it/u=1447822691,2273074389&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img4.imgtn.bdimg.com/it/u=1711927594,1272105846&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img1.imgtn.bdimg.com/it/u=1542403978,833282943&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选", "http://img4.imgtn.bdimg.com/it/u=156396060,3599398840&fm=26&gp=0.jpg"));
+        list.add(new Info(1, "壁纸_海量高清精选1", "http://img3.imgtn.bdimg.com/it/u=4150026489,1943935114&fm=26&gp=0.jpg"));
+        list.add(new Info(2, "壁纸_海量高清精选2", "http://img4.imgtn.bdimg.com/it/u=2787880723,3061645111&fm=26&gp=0.jpg"));
+        list.add(new Info(3, "壁纸_海量高清精选3", "http://img3.imgtn.bdimg.com/it/u=165337335,1524178590&fm=26&gp=0.jpg"));
+        list.add(new Info(4, "壁纸_海量高清精选4", "http://img0.imgtn.bdimg.com/it/u=442340884,1909164320&fm=26&gp=0.jpg"));
+        list.add(new Info(5, "壁纸_海量高清精选5", "http://img3.imgtn.bdimg.com/it/u=3407380450,178139315&fm=26&gp=0.jpg"));
+        list.add(new Info(6, "壁纸_海量高清精选6", "http://img3.imgtn.bdimg.com/it/u=1576567003,3635369844&fm=26&gp=0.jpg"));
+        list.add(new Info(7, "壁纸_海量高清精选7", "http://img4.imgtn.bdimg.com/it/u=766879173,2974934941&fm=26&gp=0.jpg"));
+        list.add(new Info(8, "壁纸_海量高清精选8", "http://img5.imgtn.bdimg.com/it/u=2950298496,1136505419&fm=26&gp=0.jpg"));
+        list.add(new Info(9, "壁纸_海量高清精选9", "http://img2.imgtn.bdimg.com/it/u=1447822691,2273074389&fm=26&gp=0.jpg"));
+        list.add(new Info(10, "壁纸_海量高清精选10", "http://img4.imgtn.bdimg.com/it/u=1711927594,1272105846&fm=26&gp=0.jpg"));
+        list.add(new Info(11, "壁纸_海量高清精选11", "http://img1.imgtn.bdimg.com/it/u=1542403978,833282943&fm=26&gp=0.jpg"));
+        list.add(new Info(12, "壁纸_海量高清精选12", "http://img4.imgtn.bdimg.com/it/u=156396060,3599398840&fm=26&gp=0.jpg"));
         return list;
     }
 
