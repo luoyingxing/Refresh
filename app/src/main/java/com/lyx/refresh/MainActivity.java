@@ -25,6 +25,7 @@ import com.lyx.refresh.adapter.ViewHolder;
 import com.lyx.refresh.annotation.Id;
 import com.lyx.refresh.annotation.IdParser;
 import com.lyx.refresh.entity.Info;
+import com.lyx.refresh.sample.NewsActivity;
 import com.lyx.refresh.sample.PersonalActivity;
 import com.lyx.refresh.view.RefreshLayout;
 
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_camera) {
             startActivity(new Intent(MainActivity.this, PersonalActivity.class));
         } else if (id == R.id.nav_gallery) {
-
+            startActivity(new Intent(MainActivity.this, NewsActivity.class));
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

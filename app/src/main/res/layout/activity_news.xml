@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_news"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary" />
+
+    <com.lyx.refresh.view.RefreshLayout
+        android:id="@+id/refresh_layout_news"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/iv_refresh_news"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <ListView
+            android:id="@+id/lv_news"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="#dcdcdc"
+            android:dividerHeight="1dp" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/iv_load_news"
+                android:layout_width="match_parent"
+                android:layout_height="70dp" />
+        </FrameLayout>
+
+    </com.lyx.refresh.view.RefreshLayout>
+
+</LinearLayout>
