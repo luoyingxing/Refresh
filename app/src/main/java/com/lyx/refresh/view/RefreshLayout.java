@@ -1,5 +1,6 @@
 package com.lyx.refresh.view;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -39,9 +40,14 @@ public class RefreshLayout extends ViewGroup {
     private int mPullViewPosition;
 
     /**
-     * 手指释放、刷新和加载完毕后的回弹时间
+     * 刷新、加载完毕后的回弹时间，（单位：毫秒）
      */
-    private static final long mSpringBackAnimationTimeDelay = 260;
+    private static final long mSpringBackAnimationTimeDelay = 260L;
+
+    /**
+     * 手指释放后的回弹时间，（单位：毫秒）
+     */
+    private static final long mSpringBackAnimationTimeDelayForRelease = 180L;
 
     /**
      * 设置 RefreshLayout 的子View能否进行回弹效果, 在xml 里设置refresh:scrollEnable="true"  即可，默认关闭
@@ -441,39 +447,14 @@ public class RefreshLayout extends ViewGroup {
         }
     }
 
+    /**
+     * 手指释放后
+     */
     private void requestRefreshLayoutOnDone() {
         if (mStatus == Status.PREPARE_TO_REFRESH && null != mHeaderView) {
-            mStatus = Status.REFRESHING;
-            if (mHeaderView instanceof Header) {
-                ((Header) mHeaderView).onRefreshing();
-            }
-
-            if (null != mOnStatusListener) {
-                mOnStatusListener.onRefreshing();
-            }
-
-            mPullDownY = mHeaderHeight;
-            // 刷新操作
-            if (mOnRefreshListener != null) {
-                mOnRefreshListener.onRefresh();
-            }
-            requestLayout();
+            springBackAnimationToRefresh();
         } else if (mStatus == Status.PREPARE_TO_LOAD && null != mFooterView) {
-            mStatus = Status.LOADING;
-            if (mFooterView instanceof Footer) {
-                ((Footer) mFooterView).onLoading();
-            }
-
-            if (null != mOnStatusListener) {
-                mOnStatusListener.onLoading();
-            }
-
-            mPullUpY = -mFooterHeight;
-            // 加载操作
-            if (mOnRefreshListener != null) {
-                mOnRefreshListener.onLoadMore();
-            }
-            requestLayout();
+            springBackAnimationToLoad();
         } else {
             if (mStatus == Status.REFRESHING && null != mHeaderView) {
                 mPullDownY = mHeaderHeight;
@@ -526,6 +507,104 @@ public class RefreshLayout extends ViewGroup {
                 }
             });
         }
+    }
+
+    /**
+     * 下拉刷新，手指释放后执行
+     */
+    private void springBackAnimationToRefresh() {
+        float startHeight = mPullDownY;
+        float endHeight = mHeaderHeight;
+
+        ValueAnimator anim = ValueAnimator.ofFloat(startHeight, endHeight);
+        anim.setDuration(mSpringBackAnimationTimeDelayForRelease).start();
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mPullDownY = (float) animation.getAnimatedValue();
+                requestLayout();
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mStatus = Status.REFRESHING;
+                if (mHeaderView instanceof Header) {
+                    ((Header) mHeaderView).onRefreshing();
+                }
+
+                if (null != mOnStatusListener) {
+                    mOnStatusListener.onRefreshing();
+                }
+
+                mPullDownY = mHeaderHeight;
+                // 刷新操作
+                if (mOnRefreshListener != null) {
+                    mOnRefreshListener.onRefresh();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+    }
+
+    /**
+     * 上拉加载，手指释放后执行
+     */
+    private void springBackAnimationToLoad() {
+        float startHeight = mPullUpY;
+        float endHeight = -mFooterHeight;
+
+        ValueAnimator anim = ValueAnimator.ofFloat(startHeight, endHeight);
+        anim.setDuration(mSpringBackAnimationTimeDelayForRelease).start();
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mPullUpY = (float) animation.getAnimatedValue();
+                requestLayout();
+            }
+        });
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mStatus = Status.LOADING;
+                if (mFooterView instanceof Footer) {
+                    ((Footer) mFooterView).onLoading();
+                }
+
+                if (null != mOnStatusListener) {
+                    mOnStatusListener.onLoading();
+                }
+
+                mPullUpY = -mFooterHeight;
+                // 加载操作
+                if (mOnRefreshListener != null) {
+                    mOnRefreshListener.onLoadMore();
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
     }
 
     public void onRefreshComplete() {
