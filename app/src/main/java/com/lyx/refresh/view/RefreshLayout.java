@@ -1,5 +1,6 @@
 package com.lyx.refresh.view;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -25,14 +26,26 @@ public class RefreshLayout extends ViewGroup {
     private static final String TAG = "RefreshLayout";
     private int mWindowWidth;
     private int mWindowHeight;
-    private int mHeaderHeight = 200;
-    private int mFooterHeight = 200;
+    private int mHeaderHeight;
+    private int mFooterHeight;
     private View mHeaderView;
     private View mContentView;
     private View mFooterView;
 
+    /**
+     * 当RefreshLayout只有两个子View时，需要指明哪个字view是滑动的view，否则会抛出 RuntimeException：
+     * please assign the pull view in RefreshLayout in xml with refresh:pullViewPosition="first"
+     */
     private int mPullViewPosition;
 
+    /**
+     * 手指释放、刷新和加载完毕后的回弹时间
+     */
+    private long mSpringBackAnimationTimeDelay = 260;
+
+    /**
+     * 当前拖动的状态
+     */
     private Status mStatus = Status.INIT;
 
     public enum Status {
@@ -322,6 +335,7 @@ public class RefreshLayout extends ViewGroup {
                 }
                 break;
             case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
                 requestRefreshLayoutOnDone();
                 break;
         }
@@ -447,6 +461,7 @@ public class RefreshLayout extends ViewGroup {
             if (mOnRefreshListener != null) {
                 mOnRefreshListener.onRefresh();
             }
+            requestLayout();
         } else if (mStatus == Status.PREPARE_TO_LOAD && null != mFooterView) {
             mStatus = Status.LOADING;
             if (mFooterView instanceof Footer) {
@@ -462,6 +477,7 @@ public class RefreshLayout extends ViewGroup {
             if (mOnRefreshListener != null) {
                 mOnRefreshListener.onLoadMore();
             }
+            requestLayout();
         } else {
             if (mStatus == Status.REFRESHING && null != mHeaderView) {
                 mPullDownY = mHeaderHeight;
@@ -479,16 +495,45 @@ public class RefreshLayout extends ViewGroup {
                     mOnStatusListener.onRefreshInit();
                     mOnStatusListener.onLoadInit();
                 }
-                mPullUpY = 0;
-                mPullDownY = 0;
+                springBackAnimation();
             }
         }
-        requestLayout();
+    }
+
+    /**
+     * 手指释放、刷新完成、加载完成后的回弹效果
+     */
+    private void springBackAnimation() {
+        if (mPullDownY != 0) {
+            //刷新完成后回弹
+            float totalHeight = mPullDownY;
+            ValueAnimator anim = ValueAnimator.ofFloat(totalHeight, 0);
+            anim.setDuration(mSpringBackAnimationTimeDelay).start();
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mPullDownY = (float) animation.getAnimatedValue();
+                    requestLayout();
+                }
+            });
+
+        } else if (mPullUpY != 0) {
+            //加载完成后回弹
+            float totalHeight = mPullUpY;
+            ValueAnimator anim = ValueAnimator.ofFloat(totalHeight, 0);
+            anim.setDuration(mSpringBackAnimationTimeDelay).start();
+            anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mPullUpY = (float) animation.getAnimatedValue();
+                    requestLayout();
+                }
+            });
+        }
     }
 
     public void onRefreshComplete() {
-        mPullUpY = 0;
-        mPullDownY = 0;
+        springBackAnimation();
         requestLayout();
         mStatus = Status.INIT;
 
@@ -502,8 +547,7 @@ public class RefreshLayout extends ViewGroup {
     }
 
     public void onLoadMoreComplete() {
-        mPullUpY = 0;
-        mPullDownY = 0;
+        springBackAnimation();
         requestLayout();
         mStatus = Status.INIT;
 
