@@ -16,30 +16,47 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lyx.refresh.adapter.CommonAdapter;
 import com.lyx.refresh.adapter.ViewHolder;
+import com.lyx.refresh.annotation.Id;
+import com.lyx.refresh.annotation.IdParser;
 import com.lyx.refresh.entity.Info;
 import com.lyx.refresh.sample.PersonalActivity;
 import com.lyx.refresh.view.RefreshLayout;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    @Id(id = R.id.refresh_layout)
     private RefreshLayout mRefreshLayout;
+    @Id(id = R.id.list_view)
     private ListView mListView;
+    @Id(id = R.id.tv_refresh)
     private TextView mRefreshTV;
+    @Id(id = R.id.tv_load)
     private TextView mLoadTV;
-    private CommonAdapter<Info> mAdapter;
+    @Id(id = R.id.iv_refresh)
+    private ImageView mRefreshIV;
+    @Id(id = R.id.iv_load)
+    private ImageView mLoadIV;
+    @Id(id = R.id.pb_refresh)
+    private ProgressBar mRefreshBar;
+    @Id(id = R.id.pb_load)
+    private ProgressBar mLoadBar;
     private ImageView mAvatarIV;
+
+    private CommonAdapter<Info> mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        IdParser.inject(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("简单使用");
         setSupportActionBar(toolbar);
@@ -65,11 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        mRefreshLayout = (RefreshLayout) findViewById(R.id.refresh_layout);
-        mListView = (ListView) findViewById(R.id.list_view);
-        mRefreshTV = (TextView) findViewById(R.id.tv_refresh);
-        mLoadTV = (TextView) findViewById(R.id.tv_load);
-
         mRefreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
 
             @Override
@@ -83,46 +95,65 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
+        //头部和底部如果没有实现Footer 或者 Header, 可以通过监听 RefreshLayout 的 OnStatusListener事件来处理顶部和底部的一些操作
         mRefreshLayout.setOnStatusListener(new RefreshLayout.OnStatusListener() {
 
             @Override
             public void onRefreshInit() {
                 mRefreshTV.setText("下拉刷新");
+                mRefreshBar.setVisibility(View.INVISIBLE);
+                mRefreshIV.setVisibility(View.VISIBLE);
+                mRefreshIV.setImageResource(R.drawable.ic_refresh_arrow_down_white);
             }
 
             @Override
             public void onPrepareToRefresh() {
                 mRefreshTV.setText("松开刷新");
+                mRefreshIV.setImageResource(R.drawable.ic_refresh_arrow_up_white);
             }
 
             @Override
             public void onRefreshing() {
                 mRefreshTV.setText("正在刷新");
+                mRefreshBar.setVisibility(View.VISIBLE);
+                mRefreshIV.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onRefreshFinish() {
                 mRefreshTV.setText("下拉刷新");
+                mRefreshBar.setVisibility(View.INVISIBLE);
+                mRefreshIV.setVisibility(View.VISIBLE);
+                mRefreshIV.setImageResource(R.drawable.ic_refresh_arrow_down_white);
             }
 
             @Override
             public void onLoadInit() {
                 mLoadTV.setText("上拉加载更多");
+                mLoadBar.setVisibility(View.INVISIBLE);
+                mLoadIV.setVisibility(View.VISIBLE);
+                mLoadIV.setImageResource(R.drawable.ic_refresh_arrow_up_white);
             }
 
             @Override
             public void onPrepareToLoadMore() {
                 mLoadTV.setText("松开加载更多");
+                mLoadIV.setImageResource(R.drawable.ic_refresh_arrow_down_white);
             }
 
             @Override
             public void onLoading() {
                 mLoadTV.setText("正在加载");
+                mLoadBar.setVisibility(View.VISIBLE);
+                mLoadIV.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onLoadFinish() {
                 mLoadTV.setText("上拉加载更多");
+                mLoadBar.setVisibility(View.INVISIBLE);
+                mLoadIV.setVisibility(View.VISIBLE);
+                mLoadIV.setImageResource(R.drawable.ic_refresh_arrow_up_white);
             }
         });
 
@@ -136,44 +167,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
         mListView.setAdapter(mAdapter);
 
-        mAdapter.addAll(getDataList());
+        mAdapter.addAll(Info.getDataList());
     }
 
     private Handler mHandler = new Handler() {
 
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
             switch (msg.what) {
                 case 0x101:
                     mAdapter.clear();
-                    mAdapter.addAll(getDataList());
+                    mAdapter.addAll(Info.getDataList());
                     mRefreshLayout.onRefreshComplete();
                     break;
                 case 0x102:
-                    mAdapter.addAll(getDataList());
+                    mAdapter.addAll(Info.getDataList());
                     mRefreshLayout.onLoadMoreComplete();
                     break;
             }
+            super.handleMessage(msg);
         }
     };
-
-    private List<Info> getDataList() {
-        List<Info> list = new ArrayList<>();
-        list.add(new Info(1, "壁纸_海量高清精选1", "http://img3.imgtn.bdimg.com/it/u=4150026489,1943935114&fm=26&gp=0.jpg"));
-        list.add(new Info(2, "壁纸_海量高清精选2", "http://img4.imgtn.bdimg.com/it/u=2787880723,3061645111&fm=26&gp=0.jpg"));
-        list.add(new Info(3, "壁纸_海量高清精选3", "http://img3.imgtn.bdimg.com/it/u=165337335,1524178590&fm=26&gp=0.jpg"));
-        list.add(new Info(4, "壁纸_海量高清精选4", "http://img0.imgtn.bdimg.com/it/u=442340884,1909164320&fm=26&gp=0.jpg"));
-        list.add(new Info(5, "壁纸_海量高清精选5", "http://img3.imgtn.bdimg.com/it/u=3407380450,178139315&fm=26&gp=0.jpg"));
-        list.add(new Info(6, "壁纸_海量高清精选6", "http://img3.imgtn.bdimg.com/it/u=1576567003,3635369844&fm=26&gp=0.jpg"));
-        list.add(new Info(7, "壁纸_海量高清精选7", "http://img4.imgtn.bdimg.com/it/u=766879173,2974934941&fm=26&gp=0.jpg"));
-        list.add(new Info(8, "壁纸_海量高清精选8", "http://img5.imgtn.bdimg.com/it/u=2950298496,1136505419&fm=26&gp=0.jpg"));
-        list.add(new Info(9, "壁纸_海量高清精选9", "http://img2.imgtn.bdimg.com/it/u=1447822691,2273074389&fm=26&gp=0.jpg"));
-        list.add(new Info(10, "壁纸_海量高清精选10", "http://img4.imgtn.bdimg.com/it/u=1711927594,1272105846&fm=26&gp=0.jpg"));
-        list.add(new Info(11, "壁纸_海量高清精选11", "http://img1.imgtn.bdimg.com/it/u=1542403978,833282943&fm=26&gp=0.jpg"));
-        list.add(new Info(12, "壁纸_海量高清精选12", "http://img4.imgtn.bdimg.com/it/u=156396060,3599398840&fm=26&gp=0.jpg"));
-        return list;
-    }
 
     @Override
     public void onBackPressed() {

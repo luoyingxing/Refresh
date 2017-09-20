@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorAccent"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/iv_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_refresh_arrow_down_white" />
+
+    <ProgressBar
+        android:id="@+id/pb_refresh"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:indeterminateDrawable="@drawable/refresh_progressbar"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/tv_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/iv_refresh"
+        android:layout_toRightOf="@+id/iv_refresh"
+        android:paddingBottom="20dp"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:paddingTop="20dp"
+        android:text="下拉刷新"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+</RelativeLayout>
