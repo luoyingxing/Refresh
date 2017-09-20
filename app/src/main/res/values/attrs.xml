@@ -6,6 +6,7 @@
             <enum name="first" value="1" />
             <enum name="second" value="2" />
         </attr>
+        <attr name="scrollEnable" format="boolean" />
     </declare-styleable>
 
 </resources>

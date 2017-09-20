@@ -41,7 +41,12 @@ public class RefreshLayout extends ViewGroup {
     /**
      * 手指释放、刷新和加载完毕后的回弹时间
      */
-    private long mSpringBackAnimationTimeDelay = 260;
+    private static final long mSpringBackAnimationTimeDelay = 260;
+
+    /**
+     * 设置 RefreshLayout 的子View能否进行回弹效果, 在xml 里设置refresh:scrollEnable="true"  即可，默认关闭
+     */
+    private boolean mScrollEnable;
 
     /**
      * 当前拖动的状态
@@ -85,6 +90,8 @@ public class RefreshLayout extends ViewGroup {
 
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RefreshLayout);
         mPullViewPosition = array.getInt(R.styleable.RefreshLayout_pullViewPosition, 0);
+
+        mScrollEnable = array.getBoolean(R.styleable.RefreshLayout_scrollEnable, false);
 
         array.recycle();
     }
@@ -255,13 +262,8 @@ public class RefreshLayout extends ViewGroup {
                     return null != topChildView && 0 == topChildView.getTop();
                 }
             }
-
-//            Rect local = new Rect();
-//            mContentView.getLocalVisibleRect(local);
-//            Log.w(TAG, "Down : " + local.left + "," + local.top + "," + local.right + "," + local.bottom);
-//            return 0 == local.top;
         }
-        return false;
+        return mScrollEnable;
     }
 
     private boolean canPullUp() {
@@ -279,14 +281,8 @@ public class RefreshLayout extends ViewGroup {
                 }
             }
 
-//            Rect local = new Rect();
-//            mContentView.getGlobalVisibleRect(local);
-
-//            Log.i(TAG, "Up : " + local.left + "," + local.top + "," + local.right + "," + local.bottom);
-
-//            return local.bottom == mContentView.getMeasuredHeight();
         }
-        return false;
+        return mScrollEnable;
     }
 
     private float mPullDownY;
