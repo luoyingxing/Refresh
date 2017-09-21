@@ -6,7 +6,11 @@
             <enum name="first" value="1" />
             <enum name="second" value="2" />
         </attr>
-        <attr name="scrollEnable" format="boolean" />
+        <attr name="spring">
+            <enum name="all" value="1" />
+            <enum name="down" value="2" />
+            <enum name="up" value="3" />
+        </attr>
     </declare-styleable>
 
 </resources>

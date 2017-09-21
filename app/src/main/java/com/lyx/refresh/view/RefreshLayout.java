@@ -50,9 +50,17 @@ public class RefreshLayout extends ViewGroup {
     private static final long mSpringBackAnimationTimeDelayForRelease = 180L;
 
     /**
-     * 设置 RefreshLayout 的子View能否进行回弹效果, 在xml 里设置refresh:scrollEnable="true"  即可，默认关闭
+     * 设置 RefreshLayout 的子View能否进行回弹效果, 在xml 里设置refresh:spring="all|up|down" 即可
      */
-    private boolean mScrollEnable;
+    private int mSpring;
+    /**
+     * 是否可下拉回弹，决定于mSpring 的取值
+     */
+    private boolean mDownEnable;
+    /**
+     * 是否可上拉回弹，决定于mSpring 的取值
+     */
+    private boolean mUpEnable;
 
     /**
      * 当前拖动的状态
@@ -97,7 +105,19 @@ public class RefreshLayout extends ViewGroup {
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.RefreshLayout);
         mPullViewPosition = array.getInt(R.styleable.RefreshLayout_pullViewPosition, 0);
 
-        mScrollEnable = array.getBoolean(R.styleable.RefreshLayout_scrollEnable, false);
+        mSpring = array.getInt(R.styleable.RefreshLayout_spring, 0);
+        switch (mSpring) {
+            case 1:
+                mDownEnable = true;
+                mUpEnable = true;
+                break;
+            case 2:
+                mDownEnable = true;
+                break;
+            case 3:
+                mUpEnable = true;
+                break;
+        }
 
         array.recycle();
     }
@@ -269,7 +289,7 @@ public class RefreshLayout extends ViewGroup {
                 }
             }
         }
-        return mScrollEnable;
+        return mDownEnable;
     }
 
     private boolean canPullUp() {
@@ -288,7 +308,7 @@ public class RefreshLayout extends ViewGroup {
             }
 
         }
-        return mScrollEnable;
+        return mUpEnable;
     }
 
     private float mPullDownY;
