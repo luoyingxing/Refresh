@@ -8,6 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -290,9 +294,45 @@ public class RefreshLayout extends ViewGroup {
                     View topChildView = ((AbsListView) mContentView).getChildAt(0);
                     return null != topChildView && 0 == topChildView.getTop();
                 }
+
+            } else if (mContentView instanceof RecyclerView) {
+                int firstVisible = -1;
+
+                if (((RecyclerView) mContentView).getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    RecyclerView.LayoutManager manager = ((RecyclerView) mContentView).getLayoutManager();
+                    if (manager instanceof GridLayoutManager) {
+                        firstVisible = ((GridLayoutManager) manager).findFirstVisibleItemPosition();
+                    } else if (manager instanceof LinearLayoutManager) {
+                        firstVisible = ((LinearLayoutManager) manager).findFirstVisibleItemPosition();
+                    } else if (manager instanceof StaggeredGridLayoutManager) {
+                        int[] positions = new int[((StaggeredGridLayoutManager) manager).getSpanCount()];
+                        ((StaggeredGridLayoutManager) manager).findFirstVisibleItemPositions(positions);
+                        firstVisible = findMin(positions);
+                    }
+
+                    if (firstVisible == 0) {
+                        return true;
+                    }
+                }
             }
         }
         return mDownEnable;
+    }
+
+    /**
+     * To find the minimum value of the array
+     *
+     * @param positions visiblePositions
+     * @return min
+     */
+    private int findMin(int[] positions) {
+        int min = positions[0];
+        for (int value : positions) {
+            if (value < min) {
+                min = value;
+            }
+        }
+        return min;
     }
 
     private boolean canPullUp() {
@@ -308,10 +348,45 @@ public class RefreshLayout extends ViewGroup {
                     View bottomChildView = ((AbsListView) mContentView).getChildAt(lastVisiblePosition - firstVisiblePosition);
                     return null != bottomChildView && mContentView.getHeight() >= bottomChildView.getBottom();
                 }
-            }
 
+            } else if (mContentView instanceof RecyclerView) {
+                int lastVisible = -1;
+
+                if (((RecyclerView) mContentView).getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    RecyclerView.LayoutManager manager = ((RecyclerView) mContentView).getLayoutManager();
+                    if (manager instanceof GridLayoutManager) {
+                        lastVisible = ((GridLayoutManager) manager).findLastVisibleItemPosition();
+                    } else if (manager instanceof LinearLayoutManager) {
+                        lastVisible = ((LinearLayoutManager) manager).findLastVisibleItemPosition();
+                    } else if (manager instanceof StaggeredGridLayoutManager) {
+                        int[] lastPositions = new int[((StaggeredGridLayoutManager) manager).getSpanCount()];
+                        ((StaggeredGridLayoutManager) manager).findLastVisibleItemPositions(lastPositions);
+                        lastVisible = findMax(lastPositions);
+                    }
+
+                    if (lastVisible == ((RecyclerView) mContentView).getLayoutManager().getItemCount() - 1) {
+                        return true;
+                    }
+                }
+            }
         }
         return mUpEnable;
+    }
+
+    /**
+     * To find the maximum value of the array
+     *
+     * @param positions lastPositions
+     * @return max
+     */
+    private int findMax(int[] positions) {
+        int max = positions[0];
+        for (int value : positions) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
     }
 
     private float mPullDownY;

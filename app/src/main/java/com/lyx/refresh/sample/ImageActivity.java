@@ -1,43 +1,38 @@
-package com.lyx.refresh;
+package com.lyx.refresh.sample;
 
-import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.lyx.refresh.adapter.CommonAdapter;
-import com.lyx.refresh.adapter.ViewHolder;
+import com.lyx.refresh.R;
 import com.lyx.refresh.annotation.Id;
 import com.lyx.refresh.annotation.IdParser;
-import com.lyx.refresh.entity.Info;
-import com.lyx.refresh.sample.ImageActivity;
-import com.lyx.refresh.sample.NewsActivity;
-import com.lyx.refresh.sample.PersonalActivity;
-import com.lyx.refresh.sample.WebActivity;
+import com.lyx.refresh.entity.Image;
+import com.lyx.refresh.recycler.ViewHolder;
+import com.lyx.refresh.recycler.XAdapter;
 import com.lyx.refresh.view.RefreshLayout;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    @Id(id = R.id.refresh_layout)
+public class ImageActivity extends AppCompatActivity {
+    @Id(id = R.id.refresh_layout_image)
     private RefreshLayout mRefreshLayout;
-    @Id(id = R.id.list_view)
-    private ListView mListView;
+    @Id(id = R.id.rv_image)
+    private RecyclerView mRecyclerView;
     @Id(id = R.id.tv_refresh)
     private TextView mRefreshTV;
     @Id(id = R.id.tv_load)
@@ -50,34 +45,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ProgressBar mRefreshBar;
     @Id(id = R.id.pb_load)
     private ProgressBar mLoadBar;
-    private ImageView mAvatarIV;
 
-    private CommonAdapter<Info> mAdapter;
+    private XAdapter<Image> mXAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_image);
         IdParser.inject(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("简单使用");
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_image);
+        toolbar.setTitle("图片相册");
         setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        View headerLayout = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        mAvatarIV = (ImageView) headerLayout.findViewById(R.id.iv_avatar);
-        mAvatarIV.setOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationIcon(R.drawable.ic_back);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, PersonalActivity.class));
+                finish();
             }
         });
     }
@@ -85,6 +75,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+
+        final int width = (getResources().getDisplayMetrics().widthPixels - (int) (2 * 1.0f + 0.5f)) / 2;
+
+        mXAdapter = new XAdapter<Image>(this, new ArrayList<Image>(), R.layout.item_image_list) {
+            @Override
+            public void convert(ViewHolder holder, Image item) {
+                holder.setText(R.id.tv_image_title, "相册 " + item.getTitle());
+
+                SimpleDraweeView imageView = holder.getView(R.id.iv_image_image);
+                imageView.setLayoutParams(new LinearLayout.LayoutParams(width, width / 4 * 3));
+                imageView.setImageURI(Uri.parse(item.getUrl()));
+            }
+        };
+
+        mRecyclerView.setAdapter(mXAdapter);
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(2));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mXAdapter.setOnItemClickListener(new XAdapter.OnItemClickListeners<Image>() {
+            @Override
+            public void onItemClick(ViewHolder holder, Image item, int position) {
+            }
+
+            @Override
+            public void onItemLongClick(ViewHolder holder, Image item, int position) {
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mXAdapter.addAll(Image.getImageList());
+
         mRefreshLayout.setOnRefreshListener(new RefreshLayout.OnRefreshListener() {
 
             @Override
@@ -159,19 +184,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mLoadIV.setImageResource(R.drawable.ic_refresh_arrow_up_white);
             }
         });
-
-        mAdapter = new CommonAdapter<Info>(this, new ArrayList<Info>(), R.layout.item_recycler_view) {
-            @Override
-            public void convert(ViewHolder helper, Info info) {
-                helper.setText(R.id.text, info.getInfoId() + ". " + info.getTitle());
-                SimpleDraweeView imageView = helper.getView(R.id.image);
-                imageView.setImageURI(Uri.parse(info.getUrl()));
-            }
-        };
-        mListView.setAdapter(mAdapter);
-
-        mAdapter.addAll(Info.getDataList());
     }
+
 
     private Handler mHandler = new Handler() {
 
@@ -179,12 +193,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0x101:
-                    mAdapter.clear();
-                    mAdapter.addAll(Info.getDataList());
+                    mXAdapter.clear();
+                    mXAdapter.addAll(Image.getImageList());
                     mRefreshLayout.onRefreshComplete();
                     break;
                 case 0x102:
-                    mAdapter.addAll(Info.getDataList());
+                    mXAdapter.addAll(Image.getImageList());
                     mRefreshLayout.onLoadMoreComplete();
                     break;
             }
@@ -192,60 +206,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     };
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+    private class SpaceItemDecoration extends RecyclerView.ItemDecoration {
+        int mSpace;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        public SpaceItemDecoration(int space) {
+            this.mSpace = space;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int itemCount = mXAdapter.getItemCount();
+            int pos = parent.getChildAdapterPosition(view);
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+            outRect.left = mSpace;
+            outRect.top = mSpace;
+            outRect.bottom = mSpace;
 
-        if (id == R.id.nav_personal) {
-            startActivity(new Intent(MainActivity.this, PersonalActivity.class));
-        } else if (id == R.id.nav_news) {
-            startActivity(new Intent(MainActivity.this, NewsActivity.class));
-        } else if (id == R.id.nav_web) {
-            startActivity(new Intent(MainActivity.this, WebActivity.class));
-        } else if (id == R.id.nav_image) {
-            startActivity(new Intent(MainActivity.this, ImageActivity.class));
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            if (pos != (itemCount - 1)) {
+                outRect.right = mSpace;
+            } else {
+                outRect.right = 0;
+            }
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 }
