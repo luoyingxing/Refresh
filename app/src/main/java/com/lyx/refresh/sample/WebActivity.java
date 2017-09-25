@@ -71,4 +71,5 @@ public class WebActivity extends AppCompatActivity {
         super.onPause();
         mWebView.reload();
     }
+
 }

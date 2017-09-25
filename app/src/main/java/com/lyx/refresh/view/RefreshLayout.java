@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.AbsListView;
 
 import com.lyx.refresh.R;
@@ -333,6 +335,10 @@ public class RefreshLayout extends ViewGroup {
                 mEvents = -1;
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (requestInterceptTouchEvent(ev)) {
+                    return true;
+                }
+
                 if (mEvents == 0) {
                     if (canPullDown() && mCanPullDown && mStatus != Status.REFRESHING) {
                         mPullDownY = mPullDownY + (ev.getY() - mLastY) / mRadio;
@@ -361,8 +367,7 @@ public class RefreshLayout extends ViewGroup {
                 requestRefreshLayoutOnDone();
                 break;
         }
-        super.dispatchTouchEvent(ev);
-        return true;
+        return super.dispatchTouchEvent(ev);
     }
 
     private void checkPullDown() {
@@ -695,6 +700,28 @@ public class RefreshLayout extends ViewGroup {
         void onLoading();
 
         void onLoadFinish();
+    }
+
+    /**
+     * 请求拦截事件
+     *
+     * @param ev MotionEvent
+     * @return 是否拦截事件
+     */
+    private boolean requestInterceptTouchEvent(MotionEvent ev) {
+        if (mContentView instanceof WebView) {
+            Rect local = new Rect();
+            mContentView.getLocalVisibleRect(local);
+            //TODO 1、向下滚动时，若没有到达webView的底部，则拦截事件  2、当向上滑动时，若没有到达顶部，则拦截事件
+            int scrollY = mContentView.getScrollY();
+            float newY = ev.getY() - mLastY;
+            float total = mContentView.getPivotY() + mContentView.getMeasuredHeight();
+            if ((scrollY > 0 && newY > 0) || ((local.bottom < total) && newY < 0)) {
+                mLastY = ev.getY();
+                return super.dispatchTouchEvent(ev);
+            }
+        }
+        return false;
     }
 
 //    @Override
