@@ -2,7 +2,6 @@ package com.lyx.refresh.sample;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +12,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lyx.refresh.R;
@@ -24,6 +23,8 @@ import com.lyx.refresh.annotation.IdParser;
 import com.lyx.refresh.entity.Image;
 import com.lyx.refresh.recycler.ViewHolder;
 import com.lyx.refresh.recycler.XAdapter;
+import com.lyx.refresh.utils.DpiUtils;
+import com.lyx.refresh.utils.FrescoBuilder;
 import com.lyx.refresh.view.RefreshLayout;
 
 import java.util.ArrayList;
@@ -72,11 +73,10 @@ public class ImageActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onStart() {
         super.onStart();
-
-        final int width = (getResources().getDisplayMetrics().widthPixels - (int) (2 * 1.0f + 0.5f)) / 2;
 
         mXAdapter = new XAdapter<Image>(this, new ArrayList<Image>(), R.layout.item_image_list) {
             @Override
@@ -84,8 +84,12 @@ public class ImageActivity extends AppCompatActivity {
                 holder.setText(R.id.tv_image_title, "相册 " + item.getTitle());
 
                 SimpleDraweeView imageView = holder.getView(R.id.iv_image_image);
-                imageView.setLayoutParams(new LinearLayout.LayoutParams(width, width / 4 * 3));
-                imageView.setImageURI(Uri.parse(item.getUrl()));
+                new FrescoBuilder(ImageActivity.this, imageView, item.getUrl()) {
+                    @Override
+                    public double reSize(int imageWidth, int imageHeight) {
+                        return ((DpiUtils.getWidth() - DpiUtils.dipTopx(2)) * 1.0) / 2 / imageWidth;
+                    }
+                }.builder();
             }
         };
 
@@ -93,10 +97,22 @@ public class ImageActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(new SpaceItemDecoration(2));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        ((StaggeredGridLayoutManager) mRecyclerView.getLayoutManager()).setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //防止第一行到顶部有空白区域
+                ((StaggeredGridLayoutManager) mRecyclerView.getLayoutManager()).invalidateSpanAssignments();
+            }
+        });
+
+
         mXAdapter.setOnItemClickListener(new XAdapter.OnItemClickListeners<Image>() {
             @Override
             public void onItemClick(ViewHolder holder, Image item, int position) {
+                Toast.makeText(ImageActivity.this, "第" + position + "张", Toast.LENGTH_SHORT).show();
             }
 
             @Override

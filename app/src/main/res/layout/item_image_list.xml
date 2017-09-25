@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/app_name"
         app:actualImageScaleType="focusCrop"
+        app:placeholderImage="@mipmap/img_default"
         app:roundedCornerRadius="1dp" />
 
     <TextView
