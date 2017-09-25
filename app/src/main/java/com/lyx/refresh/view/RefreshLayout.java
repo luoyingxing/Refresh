@@ -311,7 +311,13 @@ public class RefreshLayout extends ViewGroup {
                     }
 
                     if (firstVisible == 0) {
-                        return true;
+                        if (((RecyclerView) mContentView).getChildCount() > 0) {
+                            Rect rect = new Rect();
+                            ((RecyclerView) mContentView).getChildAt(0).getLocalVisibleRect(rect);
+                            if (rect.top == 0) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
