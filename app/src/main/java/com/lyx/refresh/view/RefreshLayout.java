@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.AbsListView;
+import android.widget.ScrollView;
 
 import com.lyx.refresh.R;
 
@@ -709,7 +710,7 @@ public class RefreshLayout extends ViewGroup {
      * @return 是否拦截事件
      */
     private boolean requestInterceptTouchEvent(MotionEvent ev) {
-        if (mContentView instanceof WebView) {
+        if (mContentView instanceof WebView || mContentView instanceof ScrollView) {
             Rect local = new Rect();
             mContentView.getLocalVisibleRect(local);
             //TODO 1、向下滚动时，若没有到达webView的底部，则拦截事件  2、当向上滑动时，若没有到达顶部，则拦截事件
