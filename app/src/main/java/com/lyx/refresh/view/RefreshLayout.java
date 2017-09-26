@@ -371,7 +371,15 @@ public class RefreshLayout extends ViewGroup {
                     }
 
                     if (lastVisible == ((RecyclerView) mContentView).getLayoutManager().getItemCount() - 1) {
-                        return true;
+                        if (((RecyclerView) mContentView).getChildCount() > 0) {
+                            Rect local = new Rect();
+                            View lastChildView = ((RecyclerView) mContentView).getChildAt(((RecyclerView) mContentView).getChildCount() - 1);
+                            lastChildView.getLocalVisibleRect(local);
+                            int height = lastChildView.getMeasuredHeight();
+                            if (local.bottom == height) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
