@@ -81,6 +81,7 @@ public class ImageActivity extends AppCompatActivity {
         mXAdapter = new XAdapter<Image>(this, new ArrayList<Image>(), R.layout.item_image_list) {
             @Override
             public void convert(ViewHolder holder, Image item) {
+                holder.setIsRecyclable(false);
                 holder.setText(R.id.tv_image_title, "相册 " + item.getTitle());
 
                 SimpleDraweeView imageView = holder.getView(R.id.iv_image_image);
