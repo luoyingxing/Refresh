@@ -66,13 +66,17 @@ public abstract class XAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
         holder.getConvertView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mItemClickListener.onItemClick(holder, mList.get(position), position);
+                if (null != mItemClickListener) {
+                    mItemClickListener.onItemClick(holder, mList.get(position), position);
+                }
             }
         });
         holder.getConvertView().setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                mItemClickListener.onItemLongClick(holder, mList.get(position), position);
+                if (null != mItemClickListener) {
+                    mItemClickListener.onItemLongClick(holder, mList.get(position), position);
+                }
                 return true;
             }
         });

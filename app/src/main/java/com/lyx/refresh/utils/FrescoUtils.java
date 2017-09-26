@@ -45,4 +45,20 @@ public class FrescoUtils {
         imageView.setController(controller);
         imageView.setHierarchy(hierarchy);
     }
+
+    public static void loadImage(Context context, SimpleDraweeView imageView, String imageUrl) {
+        GenericDraweeHierarchy hierarchy =
+                new GenericDraweeHierarchyBuilder(context.getResources())
+                        .setFadeDuration(800)
+                        .setActualImageScaleType(ScalingUtils.ScaleType.FIT_XY)
+                        .build();
+        DraweeHolder mDrawHolder = DraweeHolder.create(hierarchy, context);
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setUri(imageUrl)
+                .setOldController(mDrawHolder.getController())
+                .setAutoPlayAnimations(true)
+                .build();
+        imageView.setController(controller);
+        imageView.setHierarchy(hierarchy);
+    }
 }

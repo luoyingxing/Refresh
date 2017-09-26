@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.lyx.refresh.sample.HeaderActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_footer"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary" />
+
+    <com.lyx.refresh.view.RefreshLayout
+        android:id="@+id/refresh_layout_footer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        app:pullViewPosition="first">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_footer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white" />
+
+        <com.lyx.refresh.view.FooterLayout
+            android:id="@+id/footer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:background="@android:color/black">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/iv_loading"
+                android:layout_width="150dp"
+                android:layout_height="90dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/app_name"
+                android:src="@mipmap/ic_nes_refresh" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_gravity="top"
+                android:max="100"
+                android:progress="10" />
+
+        </com.lyx.refresh.view.FooterLayout>
+
+    </com.lyx.refresh.view.RefreshLayout>
+
+</LinearLayout>

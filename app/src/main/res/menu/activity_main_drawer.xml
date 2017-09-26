@@ -20,16 +20,16 @@
             android:title="图片相册" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="自定义">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_header"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="自定义Header" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_footer"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="自定义Footer" />
         </menu>
     </item>
 

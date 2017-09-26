@@ -25,6 +25,8 @@ import com.lyx.refresh.adapter.ViewHolder;
 import com.lyx.refresh.annotation.Id;
 import com.lyx.refresh.annotation.IdParser;
 import com.lyx.refresh.entity.Info;
+import com.lyx.refresh.sample.FooterActivity;
+import com.lyx.refresh.sample.HeaderActivity;
 import com.lyx.refresh.sample.ImageActivity;
 import com.lyx.refresh.sample.NewsActivity;
 import com.lyx.refresh.sample.PersonalActivity;
@@ -217,7 +219,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_personal) {
+            startActivity(new Intent(MainActivity.this, PersonalActivity.class));
             return true;
         }
 
@@ -238,10 +241,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(MainActivity.this, WebActivity.class));
         } else if (id == R.id.nav_image) {
             startActivity(new Intent(MainActivity.this, ImageActivity.class));
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_header) {
+            startActivity(new Intent(MainActivity.this, HeaderActivity.class));
+        } else if (id == R.id.nav_footer) {
+            startActivity(new Intent(MainActivity.this, FooterActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
