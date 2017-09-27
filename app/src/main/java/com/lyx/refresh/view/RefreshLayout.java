@@ -26,6 +26,8 @@ import com.lyx.refresh.R;
 
 /**
  * RefreshLayout
+ * 1、支持嵌套AbsListView、RecyclerView，实现上拉加载和下拉刷新，刷新头和加载头均可进行自定义，只需实现Header或者Footer接口即可。
+ * 2、还支持嵌套WebView、ScrollView，实现回弹效果
  * <p>
  * Created by luoyingxing on 2017/8/28.
  */
@@ -278,7 +280,7 @@ public class RefreshLayout extends ViewGroup {
     }
 
     /**
-     * @return true is can pull down , otherwise.
+     * @return 返回true则表示可以进行下拉操作
      */
     private boolean canPullDown() {
         if (mPullDownY > 0) {
@@ -288,7 +290,6 @@ public class RefreshLayout extends ViewGroup {
         if (null != mContentView) {
             if (mContentView instanceof AbsListView) {
                 int firstVisiblePosition = ((AbsListView) mContentView).getFirstVisiblePosition();
-                int lastVisiblePosition = ((AbsListView) mContentView).getLastVisiblePosition();
 
                 if (0 == firstVisiblePosition) {
                     View topChildView = ((AbsListView) mContentView).getChildAt(0);
@@ -341,6 +342,9 @@ public class RefreshLayout extends ViewGroup {
         return min;
     }
 
+    /**
+     * @return 返回true则表示可以进行上拉操作
+     */
     private boolean canPullUp() {
         if (mPullUpY < 0) {
             return true;
@@ -403,9 +407,21 @@ public class RefreshLayout extends ViewGroup {
         return max;
     }
 
+    /**
+     * 下拉的距离
+     */
     private float mPullDownY;
+    /**
+     * 上拉的距离
+     */
     private float mPullUpY;
+    /**
+     * 记录最后触摸的坐标Y值
+     */
     private float mLastY;
+    /**
+     * 滑动因子，用于计算正弦函数的值变化，实现回弹的效果
+     */
     private float mRadio = 4;
     private int mEvents;
     private boolean mCanPullDown;
@@ -425,6 +441,7 @@ public class RefreshLayout extends ViewGroup {
                 mEvents = -1;
                 break;
             case MotionEvent.ACTION_MOVE:
+                //TODO 在此进行事件拦截，处理实现单纯的回弹效果
                 if (requestInterceptTouchEvent(ev)) {
                     return true;
                 }
