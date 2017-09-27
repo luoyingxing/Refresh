@@ -19,13 +19,13 @@ build.gradle需支持以下依赖:
 ## 简单使用
 - 在main.xml文件中声明：
 
-    <com.lyx.refresh.view.RefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <com.lyx.refresh.view.RefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
   
         <include layout="@layout/layout_main_refresh_header" />
     
