@@ -15,7 +15,13 @@ build.gradle需支持以下依赖:
 - compile 'com.android.support:design:25.3.1'
 
 ## 效果图
-![]()
+![](https://github.com/luoyingxing/image/blob/master/base.gif)
+![](https://github.com/luoyingxing/image/blob/master/personal.gif)
+![](https://github.com/luoyingxing/image/blob/master/github.gif)
+![](https://github.com/luoyingxing/image/blob/master/recyclerView.gif)
+![](https://github.com/luoyingxing/image/blob/master/news.gif)
+![](https://github.com/luoyingxing/image/blob/master/header.gif)
+![](https://github.com/luoyingxing/image/blob/master/footer.gif)
 
 ## 简单使用
 - 在main.xml文件中声明：
