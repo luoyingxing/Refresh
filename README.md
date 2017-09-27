@@ -1,7 +1,8 @@
 # Refresh
 ## 功能描述（JDK1.8）
-Refresh是一个支持下拉刷新和上拉加载的智能库，支持嵌套ListView、GridView、RecyclerView，还可以自定义刷新布局和加载布局，
-只需实现Header和Footer接口即可。Refresh还支持实现回弹效果，支持WebView、ScrollView。
+Refresh是一个支持下拉刷新和上拉加载的智能库，核心布局RefreshLayout，继承ViewGroup，支持嵌套ListView、GridView、RecyclerView，刷新布局和加载布局随你定义，
+可以是普通的View或ViewGroup。若需要监听下拉和上拉的值属性变化，可以自定义View或者ViewGroup，实现Header和Footer接口即可。核心回调函数是：onPullingDown（）和
+onPullingUp（），RefreshLayout远不止实现上拉和加载功能，还可实现回弹效果，支持WebView、ScrollView。具体使用请参考demo，代码不多，轻量入门级。
  
 ## 版本描述
 暂无。
@@ -14,7 +15,7 @@ build.gradle需支持以下依赖:
 - compile 'com.android.support:design:25.3.1'
 
 ## 效果图
-![](https://github.com/luoyingxing/image/blob/master/test_img.jpg)
+![]()
 
 ## 简单使用
 - 在main.xml文件中声明：
@@ -39,7 +40,7 @@ build.gradle需支持以下依赖:
 
         <include layout="@layout/layout_main_refresh_footer" />
     
-    </com.lyx.refresh.view.RefreshLayout>
+        </com.lyx.refresh.view.RefreshLayout>
 
 - 在MainActivity.java中直接设置监听事件:
 
@@ -210,15 +211,15 @@ build.gradle需支持以下依赖:
         });
 
 ## 自定义Footer
-具体请查看demo。
+跟自定义Header类似，具体请查看demo。
 
 ## Q&A
-仍待完善，支持更多的View。
+仍待完善。
 
 ## 联系
-如果有紧急事件可联系作者或加QQ：<br/>
+如果有紧急事件可联系作者或加QQ：
 - Q Q： 602390502
 - 邮箱： luoyingxing@126.com
 
 ## Wiki
-[TimeAxis实现时光轴](https://github.com/luoyingxing/TimeAxis.git)
+- [TimeAxis实现时光轴](https://github.com/luoyingxing/TimeAxis.git)
