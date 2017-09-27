@@ -15,7 +15,7 @@ compile 'com.android.support:design:25.3.1'
 
 ## 简单使用
 效果图如下
-![](https://123p0.sogoucdn.com/imgu/2017/09/20170919202919_168.jpg)
+![](https://github.com/luoyingxing/image/blob/master/test_img.jpg)
 
 ## Q&A
 仍待完善，支持更多的View。
