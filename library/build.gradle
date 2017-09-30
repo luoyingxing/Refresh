@@ -30,3 +30,16 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     testCompile 'junit:junit:4.12'
 }
+
+
+//Copy type
+task makeJar(type: Copy) {
+    delete 'build/libs/refresh.jar'
+    from('build/intermediates/bundles/default/')
+    into('jar/')
+    include('classes.jar')
+    rename ('classes.jar', 'refresh.jar')
+}
+
+makeJar.dependsOn(build)
+//在终端执行生成JAR包 gradlew makeJar
