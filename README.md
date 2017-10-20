@@ -50,11 +50,12 @@ build.gradle需支持以下依赖:
 
 - RefreshLayout在xml中可以配置以下参数：
 
-1、当RefreshLayout只包含两个子View的时候，需要通过pullViewPosition指明第几个是需要滚动的View。
-    app:pullViewPosition = "first" 
+- 当RefreshLayout只包含两个子View的时候，需要通过pullViewPosition指明第几个是需要滚动的View。
+<pre><code>app:pullViewPosition = "first" </code></pre>
+    
 
-2、当RefreshLayout只包含两个子WebView或者ScrollView的时候，需要通过spring指明该View是只允许上拉还是下拉，或者都允许。
-    app:spring = "all" 
+- 当RefreshLayout包含WebView或者ScrollView的时候，需要通过spring指明该View是只允许上拉（pull）还是下拉（down），或者都允许（all）。
+<pre><code>app:spring = "all" </code></pre>
 
 - 在MainActivity.java中直接设置监听事件:
 
