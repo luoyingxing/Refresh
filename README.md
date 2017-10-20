@@ -17,7 +17,7 @@ build.gradle需支持以下依赖:
 ## 效果图
 ![](https://github.com/luoyingxing/image/blob/master/base.gif)
 ![](https://github.com/luoyingxing/image/blob/master/personal.gif)
-![](https://github.com/luoyingxing/image/blob/master/github.gif)
+![](https://github.com/luoyingxing/image/blob/master/Github.mp4_1508466178.gif)
 ![](https://github.com/luoyingxing/image/blob/master/recyclerView.gif)
 ![](https://github.com/luoyingxing/image/blob/master/news.gif)
 ![](https://github.com/luoyingxing/image/blob/master/header.gif)
