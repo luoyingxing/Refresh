@@ -818,7 +818,7 @@ public class RefreshLayout extends ViewGroup {
      * @return 是否拦截事件
      */
     private boolean requestInterceptTouchEvent(MotionEvent ev) {
-        if (mContentView instanceof WebView || mContentView instanceof ScrollView) {
+        if (mContentView instanceof WebView) {
             Rect local = new Rect();
             mContentView.getLocalVisibleRect(local);
             //TODO 1、向下滚动时，若没有到达webView的底部，则拦截事件  2、当向上滑动时，若没有到达顶部，则拦截事件
@@ -830,6 +830,20 @@ public class RefreshLayout extends ViewGroup {
                 return super.dispatchTouchEvent(ev);
             }
         }
+
+        if (mContentView instanceof ScrollView) {
+            Rect local = new Rect();
+            mContentView.getLocalVisibleRect(local);
+            //TODO 1、向下滚动时，若没有到达ScrollView的底部，则拦截事件  2、当向上滑动时，若没有到达顶部，则拦截事件
+
+            int scrollY = mContentView.getScrollY();
+            float total = ((ViewGroup) mContentView).getChildAt(0).getMeasuredHeight();
+
+            if (local.bottom < total && (local.top != 0 || scrollY != 0)) {
+                return super.dispatchTouchEvent(ev);
+            }
+        }
+
         return false;
     }
 
