@@ -8,6 +8,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -759,6 +761,7 @@ public class RefreshLayout extends ViewGroup {
         springBackAnimation();
         requestLayout();
         mStatus = Status.INIT;
+        mEnableUp = false;
 
         if (null != mFooterView && mFooterView instanceof Footer) {
             ((Footer) mFooterView).onFinish();
@@ -844,7 +847,46 @@ public class RefreshLayout extends ViewGroup {
             }
         }
 
+        if (mContentView instanceof CoordinatorLayout) {
+            if (!mSetting) {
+                for (int i = ((ViewGroup) mContentView).getChildCount() - 1; i >= 0; i--) {
+                    View view = ((ViewGroup) mContentView).getChildAt(i);
+                    if (view instanceof NestedScrollView) {
+                        addListener(((NestedScrollView) view));
+                        break;
+                    }
+                }
+            }
+
+            float newY = ev.getY() - mTemporaryY;
+
+            if ((!mEnableUp || (0 < newY))) {
+                mTemporaryY = ev.getY();
+                return super.dispatchTouchEvent(ev);
+            }
+        }
+
         return false;
+    }
+
+    private float mTemporaryY;
+    /**
+     * 用于判断CoordinatorLayout是否到底部
+     */
+    private boolean mEnableUp;
+    private boolean mSetting;
+
+    private void addListener(NestedScrollView view) {
+        if (mSetting) {
+            return;
+        }
+        mSetting = true;
+        view.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                mEnableUp = scrollY == (v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight());
+            }
+        });
     }
 
 //    @Override
